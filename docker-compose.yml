@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    image: php-composer-postgres-node-laravel:configured
+    container_name: laravel_setup_app
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:18.4
+    container_name: laravel_setup_postgres
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data:
