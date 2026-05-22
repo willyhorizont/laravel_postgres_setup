@@ -1,11 +1,7 @@
 services:
   app:
     build: .
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    image: php-composer-postgres-node-laravel:configured
-    container_name: laravel_setup_app
+    image: laravel-postgres-${IMAGE_NAME_SUFFIX}:configured
     working_dir: /workspace
     volumes:
       - .:/workspace
@@ -18,7 +14,6 @@ services:
 
   postgres:
     image: postgres:18.4
-    container_name: laravel_setup_postgres
     environment:
       POSTGRES_DB: laravel
       POSTGRES_USER: postgres
