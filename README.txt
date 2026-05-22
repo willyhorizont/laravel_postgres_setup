@@ -8,10 +8,16 @@ npm:11.13.0
 reset:
 clear &&
 docker images &&
+docker container ls -a &&
 docker compose down &&
-sudo rm -rf new-app/ &&
-docker rmi postgres:18.4 &&
-docker rmi php-composer-postgres-node-laravel:configured
+sudo rm -rf new-app
+
+# docker stop [postgres:18.4 container id]
+# docker rm [postgres:18.4 container id]
+# docker rmi postgres:18.4
+# docker stop [php-composer-postgres-node-laravel:configured container id]
+# docker rm [php-composer-postgres-node-laravel:configured container id]
+# docker rmi php-composer-postgres-node-laravel:configured
 
 build:
 git config --global --add safe.directory /workspace
