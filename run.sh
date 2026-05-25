@@ -58,7 +58,7 @@ clear
 export IMAGE_NAME_SUFFIX=\"$APP_NAME\"
 docker images
 docker container ls -a
-sudo rm -rf laravel-projects/$APP_NAME
+sudo rm -rf laravel-postgres-projects/$APP_NAME
 docker stop $POSTGRES_CONTAINER_ID || true
 docker rm $POSTGRES_CONTAINER_ID || true
 docker stop $APP_CONTAINER_ID || true
@@ -69,7 +69,7 @@ or just: ./reset.sh $APP_NAME
 "
 
 COMMAND_RUN_PROJECT="
-cd $WORKDIR/laravel-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000
+cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000
 "
 
 echo "docker compose exec app bash -lc \"$COMMAND_RUN_PROJECT\""

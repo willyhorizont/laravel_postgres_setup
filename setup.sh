@@ -54,15 +54,15 @@ echo "laravel_postgres_setup [2/4] Create Laravel project..."
 
 COMMAND_CREATE_LARAVEL_PROJECT="
   cd $WORKDIR &&
-  mkdir -p $WORKDIR/laravel-projects &&
-  rm -rf $WORKDIR/laravel-projects/$APP_NAME &&
+  mkdir -p $WORKDIR/laravel-postgres-projects &&
+  rm -rf $WORKDIR/laravel-postgres-projects/$APP_NAME &&
   echo 'laravel_postgres_setup -> php --version:' &&
   php --version &&
   echo 'laravel_postgres_setup -> composer --version:' &&
   composer --version &&
   git config --global --add safe.directory $WORKDIR &&
   composer config --global process-timeout 600 &&
-  composer create-project --prefer-dist laravel/laravel:13.7.0 $WORKDIR/laravel-projects/$APP_NAME
+  composer create-project --prefer-dist laravel/laravel:13.7.0 $WORKDIR/laravel-postgres-projects/$APP_NAME
 "
 echo "$COMMAND_CREATE_LARAVEL_PROJECT"
 
@@ -71,7 +71,7 @@ docker compose exec app bash -lc "$COMMAND_CREATE_LARAVEL_PROJECT"
 echo "laravel_postgres_setup [3/4] Install dependencies..."
 
 COMMAND_INSTALL_DEPS="
-  cd $WORKDIR/laravel-projects/$APP_NAME &&
+  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
   echo 'laravel_postgres_setup -> php artisan --version:' &&
   php artisan --version &&
   npm install -g npm@11.15.0 --no-fund --no-audit &&
@@ -87,7 +87,7 @@ docker compose exec app bash -lc "$COMMAND_INSTALL_DEPS"
 echo "laravel_postgres_setup [4/4] Migrate database..."
 
 COMMAND_MIGRATE_DATABASE="
-  cd $WORKDIR/laravel-projects/$APP_NAME &&
+  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
   php artisan migrate
 "
 echo "$COMMAND_MIGRATE_DATABASE"
@@ -113,7 +113,7 @@ clear
 export IMAGE_NAME_SUFFIX=\"$APP_NAME\"
 docker images
 docker container ls -a
-sudo rm -rf laravel-projects/$APP_NAME
+sudo rm -rf laravel-postgres-projects/$APP_NAME
 docker stop $POSTGRES_CONTAINER_ID || true
 docker rm $POSTGRES_CONTAINER_ID || true
 docker stop $APP_CONTAINER_ID || true
@@ -125,4 +125,4 @@ or just: ./reset.sh $APP_NAME
 
 echo "laravel_postgres_setup DONE"
 echo "laravel_postgres_setup Run:"
-echo "sudo chown -R \$USER:\$USER laravel-projects/$APP_NAME && docker compose exec app bash -lc \"cd $WORKDIR/laravel-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000\""
+echo "sudo chown -R \$USER:\$USER laravel-postgres-projects/$APP_NAME && docker compose exec app bash -lc \"cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000\""

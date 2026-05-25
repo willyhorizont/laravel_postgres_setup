@@ -31,7 +31,7 @@ fi
 export IMAGE_NAME_SUFFIX=$APP_NAME
 docker images
 docker container ls -a
-sudo rm -rf laravel-projects/$APP_NAME
+sudo rm -rf laravel-postgres-projects/$APP_NAME
 docker stop $POSTGRES_CONTAINER_ID || true
 docker rm $POSTGRES_CONTAINER_ID || true
 docker stop $APP_CONTAINER_ID || true
