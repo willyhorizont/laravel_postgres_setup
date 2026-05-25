@@ -15,20 +15,13 @@ echo "APP_NAME=$APP_NAME"
 
 echo "laravel_postgres_setup"
 
-echo "
-php:8.5.6-cli
-composer/composer:2.9.8-bin
-postgres:18.4
-laravel/framework:13.11.2==laravel/laravel:13.7.0
-node:26.1.0
-npm:11.15.0
-"
+bash ./print-specification.sh
 
 echo "git config --global --add safe.directory \"$WORKDIR\""
 
 git config --global --add safe.directory "$WORKDIR"
 
-echo "laravel_postgres_setup [1/4] Build & start containers..."
+echo "laravel_postgres_setup [1/3] Build & start containers..."
 
 echo "docker compose build --no-cache"
 docker compose build --no-cache
@@ -36,72 +29,95 @@ docker compose build --no-cache
 echo "docker compose up -d --build"
 docker compose up -d --build
 
-until docker compose exec -T app bash -lc "
-php -r '
+until docker compose exec -T app php -r "
 try {
-    new PDO(\"pgsql:host=postgres;port=5432;dbname=laravel\", \"postgres\", \"secret\");
-    echo \"OK\";
+    new PDO('pgsql:host=postgres;port=5432;dbname=laravel', 'postgres', 'secret');
+    echo 'OK';
 } catch (Exception \$e) {
     exit(1);
 }
-'
-"; do
+" >/dev/null 2>&1; do
     echo "Waiting for PostgreSQL..."
     sleep 1
 done
 
-echo "laravel_postgres_setup [2/4] Create Laravel project..."
+echo "laravel_postgres_setup [2/3] Create Laravel project..."
+
+COMMAND_LARAVEL_CREATE_PROJECT_OPTION_A="
+cd $WORKDIR/laravel-postgres-projects && \
+composer create-project --prefer-dist \"laravel/laravel:13.7.0\" $APP_NAME && \
+"
+COMMAND_LARAVEL_CREATE_PROJECT_OPTION_B="
+composer global require laravel/installer && \
+export PATH=\"\$(composer global config bin-dir --absolute):\$PATH\" && \
+cd $WORKDIR/laravel-postgres-projects && \
+laravel --database pgsql new $APP_NAME && \
+"
 
 COMMAND_CREATE_LARAVEL_PROJECT="
-  cd $WORKDIR &&
-  mkdir -p $WORKDIR/laravel-postgres-projects &&
-  rm -rf $WORKDIR/laravel-postgres-projects/$APP_NAME &&
-  echo 'laravel_postgres_setup -> php --version:' &&
-  php --version &&
-  echo 'laravel_postgres_setup -> composer --version:' &&
-  composer --version &&
-  git config --global --add safe.directory $WORKDIR &&
-  composer config --global process-timeout 600 &&
-  composer create-project --prefer-dist laravel/laravel:13.7.0 $WORKDIR/laravel-postgres-projects/$APP_NAME
+cd $WORKDIR && \
+mkdir -p $WORKDIR/laravel-postgres-projects && \
+rm -rf $WORKDIR/laravel-postgres-projects/$APP_NAME && \
+echo \"laravel_postgres_setup -> php --version:\" && \
+php --version && \
+echo \"laravel_postgres_setup -> composer --version:\" && \
+composer --version && \
+git config --global --add safe.directory $WORKDIR && \
+composer config --global process-timeout 600 && \
+
+cd $WORKDIR/laravel-postgres-projects && \
+composer create-project --prefer-dist \"laravel/laravel:13.7.0\" $APP_NAME && \
+
+cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
+echo \"laravel_postgres_setup -> php artisan --version:\" && \
+php artisan --version
 "
 echo "$COMMAND_CREATE_LARAVEL_PROJECT"
 
 docker compose exec app bash -lc "$COMMAND_CREATE_LARAVEL_PROJECT"
 
-echo "laravel_postgres_setup [3/4] Install dependencies..."
+# echo "laravel_postgres_setup [3/4] Install dependencies..."
 
-COMMAND_INSTALL_DEPS="
-  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
-  echo 'laravel_postgres_setup -> php artisan --version:' &&
-  php artisan --version &&
-  npm install -g npm@11.15.0 --no-fund --no-audit &&
-  echo 'laravel_postgres_setup -> npm --version:' &&
-  npm --version &&
-  npm install --no-fund --no-audit
-"
-# && npm run build
-echo "$COMMAND_INSTALL_DEPS"
+# COMMAND_INSTALL_DEPS="
+#   cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
+#   echo 'laravel_postgres_setup -> php artisan --version:' &&
+#   php artisan --version
+# "
+# # &&
+# # npm install -g npm@11.15.0 --no-fund --no-audit &&
+# # echo 'laravel_postgres_setup -> npm --version:' &&
+# # npm --version &&
+# npm install --no-fund --no-audit
+# # && npm run build
+# echo "$COMMAND_INSTALL_DEPS"
 
-docker compose exec app bash -lc "$COMMAND_INSTALL_DEPS"
+# docker compose exec app bash -lc "$COMMAND_INSTALL_DEPS"
 
-echo "laravel_postgres_setup [4/4] Migrate database..."
+echo "laravel_postgres_setup [3/3] Post installation..."
+
 
 COMMAND_MIGRATE_DATABASE="
-  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
-  php artisan migrate
+cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
+php artisan make:model Post -mcr && \
+cat $WORKDIR/post-installation/database/migrations/create_posts_table.php > \"\$(find $WORKDIR/laravel-postgres-projects/$APP_NAME/database/migrations -name \"*create_posts_table.php\" | head -n 1)\" && \
+php artisan migrate && \
+
+cat $WORKDIR/post-installation/app/Models/Post.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/Post.php && \
+cat $WORKDIR/post-installation/app/Http/Controllers/PostController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/PostController.php && \
+cat $WORKDIR/post-installation/routes/web.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/routes/web.php && \
+
+mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts && \
+cat $WORKDIR/post-installation/resources/views/layout.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/layout.blade.php && \
+cat $WORKDIR/post-installation/resources/views/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/index.blade.php && \
+
+cat $WORKDIR/post-installation/resources/views/posts/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/index.blade.php && \
+cat $WORKDIR/post-installation/resources/views/posts/create.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/create.blade.php && \
+cat $WORKDIR/post-installation/resources/views/posts/edit.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/edit.blade.php && \
+cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php
 "
 echo "$COMMAND_MIGRATE_DATABASE"
 
 docker compose exec app bash -lc "$COMMAND_MIGRATE_DATABASE"
-
-COMMAND_INIT_GIT="
-  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
-  git init &&
-  git branch -m main
-"
-echo "$COMMAND_INIT_GIT"
-
-docker compose exec app bash -lc "$COMMAND_INIT_GIT"
 
 POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=postgres:18.4 --format \"{{.ID}}\")
 APP_CONTAINER_ID=$(docker ps -a --filter ancestor=laravel-postgres-$APP_NAME:configured --format \"{{.ID}}\")

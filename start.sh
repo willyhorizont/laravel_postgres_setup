@@ -13,28 +13,19 @@ WORKDIR="/workspace"
 
 echo "APP_NAME=$APP_NAME"
 
-echo "
-php:8.5.6-cli
-composer/composer:2.9.8-bin
-postgres:18.4
-laravel/framework:13.11.2==laravel/laravel:13.7.0
-node:26.1.0
-npm:11.15.0
-"
+bash ./print-specification.sh
 
 echo "docker compose up -d --build"
 docker compose up -d --build
 
-until docker compose exec -T app bash -lc "
-php -r '
+until docker compose exec -T app php -r "
 try {
-    new PDO(\"pgsql:host=postgres;port=5432;dbname=laravel\", \"postgres\", \"secret\");
-    echo \"OK\";
+    new PDO('pgsql:host=postgres;port=5432;dbname=laravel', 'postgres', 'secret');
+    echo 'OK';
 } catch (Exception \$e) {
     exit(1);
 }
-'
-"; do
+" >/dev/null 2>&1; do
     echo "Waiting for PostgreSQL..."
     sleep 1
 done
