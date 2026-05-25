@@ -94,6 +94,15 @@ echo "$COMMAND_MIGRATE_DATABASE"
 
 docker compose exec app bash -lc "$COMMAND_MIGRATE_DATABASE"
 
+COMMAND_INIT_GIT="
+  cd $WORKDIR/laravel-postgres-projects/$APP_NAME &&
+  git init &&
+  git branch -m main
+"
+echo "$COMMAND_INIT_GIT"
+
+docker compose exec app bash -lc "$COMMAND_INIT_GIT"
+
 POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=postgres:18.4 --format \"{{.ID}}\")
 APP_CONTAINER_ID=$(docker ps -a --filter ancestor=laravel-postgres-$APP_NAME:configured --format \"{{.ID}}\")
 
@@ -125,4 +134,4 @@ or just: ./reset.sh $APP_NAME
 
 echo "laravel_postgres_setup DONE"
 echo "laravel_postgres_setup Run:"
-echo "sudo chown -R \$USER:\$USER laravel-postgres-projects/$APP_NAME && docker compose exec app bash -lc \"cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000\""
+echo "sudo chown -R \$USER:\$USER laravel-postgres-projects/* && docker compose exec app bash -lc \"cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000\""

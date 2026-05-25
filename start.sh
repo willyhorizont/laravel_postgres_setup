@@ -7,11 +7,6 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-if [ -z "$2" ]; then
-    echo "Usage: ./setup.sh <app-name> <command>"
-    exit 1
-fi
-
 APP_NAME="$1"
 export IMAGE_NAME_SUFFIX="$APP_NAME"
 WORKDIR="/workspace"
@@ -73,10 +68,10 @@ docker rmi postgres:18.4 || true
 or just: ./reset.sh $APP_NAME
 "
 
-COMMAND_RUN_PROJECT="
-cd $WORKDIR/laravel-postgres-projects/$APP_NAME && $2
+COMMAND_START_PROJECT="
+cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000
 "
 
-echo "docker compose exec app bash -lc \"$COMMAND_RUN_PROJECT\""
+echo "docker compose exec app bash -lc \"$COMMAND_START_PROJECT\""
 
-docker compose exec app bash -lc "$COMMAND_RUN_PROJECT"
+docker compose exec app bash -lc "$COMMAND_START_PROJECT"
