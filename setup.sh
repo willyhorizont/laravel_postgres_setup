@@ -96,7 +96,7 @@ docker compose exec app bash -lc "$COMMAND_CREATE_LARAVEL_PROJECT"
 echo "laravel_postgres_setup [3/3] Post installation..."
 
 
-COMMAND_MIGRATE_DATABASE="
+COMMAND_POST_INSTALLATION="
 cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
 php artisan make:model Post -mcr && \
 cat $WORKDIR/post-installation/database/migrations/create_posts_table.php > \"\$(find $WORKDIR/laravel-postgres-projects/$APP_NAME/database/migrations -name \"*create_posts_table.php\" | head -n 1)\" && \
@@ -115,9 +115,9 @@ cat $WORKDIR/post-installation/resources/views/posts/create.blade.php > $WORKDIR
 cat $WORKDIR/post-installation/resources/views/posts/edit.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/edit.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php
 "
-echo "$COMMAND_MIGRATE_DATABASE"
+echo "$COMMAND_POST_INSTALLATION"
 
-docker compose exec app bash -lc "$COMMAND_MIGRATE_DATABASE"
+docker compose exec app bash -lc "$COMMAND_POST_INSTALLATION"
 
 POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=postgres:18.4 --format \"{{.ID}}\")
 APP_CONTAINER_ID=$(docker ps -a --filter ancestor=laravel-postgres-$APP_NAME:configured --format \"{{.ID}}\")
