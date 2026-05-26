@@ -127,20 +127,21 @@ cat $WORKDIR/post-installation/database/migrations/create_posts_table.php > \"\$
 php artisan migrate && \
 
 cat $WORKDIR/post-installation/app/Models/Post.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/Post.php && \
+cat $WORKDIR/post-installation/app/Models/User.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/User.php && \
+
 cat $WORKDIR/post-installation/app/Http/Controllers/PostController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/PostController.php && \
+cat $WORKDIR/post-installation/app/Http/Controllers/AuthController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/AuthController.php && \
 cat $WORKDIR/post-installation/routes/web.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/routes/web.php && \
 
-mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts && \
 cat $WORKDIR/post-installation/resources/views/layout.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/layout.blade.php && \
 cat $WORKDIR/post-installation/resources/views/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/index.blade.php && \
+cat $WORKDIR/post-installation/resources/views/navbar.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/navbar.blade.php && \
 
+mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts && \
 cat $WORKDIR/post-installation/resources/views/posts/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/index.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/create.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/create.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/edit.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/edit.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php && \
-
-cat $WORKDIR/post-installation/app/Http/Controllers/AuthController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/AuthController.php && \
-cat $WORKDIR/post-installation/app/Models/User.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/User.php && \
 
 mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth && \
 cat $WORKDIR/post-installation/resources/views/auth/register.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth/register.blade.php && \
