@@ -13,6 +13,9 @@ WORKDIR="/workspace"
 
 echo "APP_NAME=$APP_NAME"
 
+POSTGRES_IMAGE_NAME="postgres:18.4"
+APP_IMAGE_NAME="laravelpostgresdockerized:configured"
+
 bash ./print-specification.sh
 
 echo "docker compose up -d --build"
@@ -30,8 +33,8 @@ try {
     sleep 1
 done
 
-POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=postgres:18.4 --format \"{{.ID}}\")
-APP_CONTAINER_ID=$(docker ps -a --filter ancestor=laravel-postgres-$APP_NAME:configured --format \"{{.ID}}\")
+POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=$POSTGRES_IMAGE_NAME --format \"{{.ID}}\")
+APP_CONTAINER_ID=$(docker ps -a --filter ancestor=$APP_IMAGE_NAME --format \"{{.ID}}\")
 
 echo "
 stop:
@@ -44,8 +47,8 @@ or just: ./stop.sh $APP_NAME
 reset:
 clear
 \$APP_NAME=\"$APP_NAME\"
-\$POSTGRES_CONTAINER_ID=\$(docker ps -a --filter ancestor=postgres:18.4 --format \"{{.ID}}\")
-\$APP_CONTAINER_ID=\$(docker ps -a --filter ancestor=laravel-postgres-$APP_NAME:configured --format \"{{.ID}}\")
+\$POSTGRES_CONTAINER_ID=\$(docker ps -a --filter ancestor=$POSTGRES_IMAGE_NAME --format \"{{.ID}}\")
+\$APP_CONTAINER_ID=\$(docker ps -a --filter ancestor=$APP_IMAGE_NAME --format \"{{.ID}}\")
 export IMAGE_NAME_SUFFIX=\"$APP_NAME\"
 docker images
 docker container ls -a
@@ -54,8 +57,8 @@ docker stop $POSTGRES_CONTAINER_ID || true
 docker rm $POSTGRES_CONTAINER_ID || true
 docker stop $APP_CONTAINER_ID || true
 docker rm $APP_CONTAINER_ID || true
-docker rmi laravel-postgres-$APP_NAME:configured || true
-docker rmi postgres:18.4 || true
+docker rmi $APP_IMAGE_NAME || true
+docker rmi $POSTGRES_IMAGE_NAME || true
 or just: ./reset.sh $APP_NAME
 "
 
@@ -63,6 +66,6 @@ COMMAND_START_PROJECT="
 cd $WORKDIR/laravel-postgres-projects/$APP_NAME && php artisan serve --host=0.0.0.0 --port=8000
 "
 
-echo "docker compose exec app bash -lc \"$COMMAND_START_PROJECT\""
+echo "docker compose exec -T app bash -lc \"$COMMAND_START_PROJECT\""
 
-docker compose exec app bash -lc "$COMMAND_START_PROJECT"
+docker compose exec -T app bash -lc "$COMMAND_START_PROJECT"

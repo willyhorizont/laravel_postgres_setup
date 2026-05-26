@@ -13,20 +13,19 @@ WORKDIR="/workspace"
 
 echo "APP_NAME=$APP_NAME"
 
-clear
-
 POSTGRES_IMAGE_NAME="postgres:18.4"
-APP_IMAGE_NAME="laravel-postgres-$APP_NAME:configured"
+APP_IMAGE_NAME="laravelpostgresdockerized:configured"
 
 POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=$POSTGRES_IMAGE_NAME --format "{{.ID}}")
+echo "POSTGRES_CONTAINER_ID: $POSTGRES_CONTAINER_ID"
 if [ -z "$POSTGRES_CONTAINER_ID" ]; then
     docker images
     docker container ls -a
 
     sudo rm -rf laravel-postgres-projects/$APP_NAME
 
-    docker rmi $APP_IMAGE_NAME || true
-    docker rmi $POSTGRES_IMAGE_NAME || true
+    docker rmi -f $APP_IMAGE_NAME || true
+    docker rmi -f $POSTGRES_IMAGE_NAME || true
 
     docker images
     docker container ls -a
@@ -35,14 +34,15 @@ if [ -z "$POSTGRES_CONTAINER_ID" ]; then
 fi
 
 APP_CONTAINER_ID=$(docker ps -a --filter ancestor=$APP_IMAGE_NAME --format "{{.ID}}")
+echo "APP_CONTAINER_ID: $APP_CONTAINER_ID"
 if [ -z "$APP_CONTAINER_ID" ]; then
     docker images
     docker container ls -a
 
     sudo rm -rf laravel-postgres-projects/$APP_NAME
 
-    docker rmi $APP_IMAGE_NAME || true
-    docker rmi $POSTGRES_IMAGE_NAME || true
+    docker rmi -f $APP_IMAGE_NAME || true
+    docker rmi -f $POSTGRES_IMAGE_NAME || true
 
     docker images
     docker container ls -a
@@ -59,8 +59,8 @@ docker rm $POSTGRES_CONTAINER_ID || true
 docker stop $APP_CONTAINER_ID || true
 docker rm $APP_CONTAINER_ID || true
 
-docker rmi $APP_IMAGE_NAME || true
-docker rmi $POSTGRES_IMAGE_NAME || true
+docker rmi -f $APP_IMAGE_NAME || true
+docker rmi -f $POSTGRES_IMAGE_NAME || true
 
 docker images
 docker container ls -a

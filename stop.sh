@@ -13,7 +13,6 @@ WORKDIR="/workspace"
 
 echo "APP_NAME=$APP_NAME"
 
-clear
 export IMAGE_NAME_SUFFIX="$APP_NAME"
 docker compose down
 docker images

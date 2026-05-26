@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    image: laravel-postgres-${IMAGE_NAME_SUFFIX}:configured
+    image: laravelpostgresdockerized:configured
     working_dir: /workspace
     volumes:
       - .:/workspace
@@ -19,7 +19,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgresdata:/var/lib/postgresql
 
 volumes:
-  postgres_data:
+  postgresdata:
