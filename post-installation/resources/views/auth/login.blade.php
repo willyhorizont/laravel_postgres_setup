@@ -2,10 +2,6 @@
 
 @section('content')
 
-<a href="/">Home</a>
-
-<a href="/register">Register</a>
-
 <h1>Login</h1>
 
 <form method="POST" action="/login">

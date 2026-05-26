@@ -28,7 +28,7 @@ class PostController extends Controller
         if (auth()->check()) {
             return view('posts.create');
         }
-        abort(403);
+        return redirect('/posts')->with('error', 'Forbidden');
     }
 
     /**
@@ -42,10 +42,10 @@ class PostController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
             ]);
-            return;
+            return redirect('/posts');
         }
 
-        abort(403);
+        return redirect('/posts')->with('error', 'Forbidden');
     }
 
     /**
@@ -68,7 +68,7 @@ class PostController extends Controller
                 'post' => $post,
             ]);
         }
-        abort(403);
+        return redirect('/posts')->with('error', 'Forbidden');
     }
 
     /**
@@ -81,10 +81,10 @@ class PostController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
             ]);
-            return;
+            return redirect('/posts');
         }
 
-        abort(403);
+        return redirect('/posts')->with('error', 'Forbidden');
     }
 
     /**
@@ -94,9 +94,9 @@ class PostController extends Controller
     {
         if (auth()->check() && ($post->user_id == auth()->id())) {
             $post->delete();
-            return;
+            return redirect('/posts');
         }
 
-        abort(403);
+        return redirect('/posts')->with('error', 'Forbidden');
     }
 }
