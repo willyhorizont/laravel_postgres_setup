@@ -2,9 +2,11 @@
 
 @section('content')
 
-<h2>{{ $post->title }}</h2>
+<h1>{{ $post->title }}</h1>
 
 <p>{{ $post->content }}</p>
+
+<p>creator: {{ $post->user->name }}</p>
 
 <a href="/posts">
     Back

@@ -137,7 +137,14 @@ cat $WORKDIR/post-installation/resources/views/index.blade.php > $WORKDIR/larave
 cat $WORKDIR/post-installation/resources/views/posts/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/index.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/create.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/create.blade.php && \
 cat $WORKDIR/post-installation/resources/views/posts/edit.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/edit.blade.php && \
-cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php
+cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php && \
+
+cat $WORKDIR/post-installation/app/Http/Controllers/AuthController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/AuthController.php && \
+cat $WORKDIR/post-installation/app/Models/User.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/User.php && \
+
+mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth && \
+cat $WORKDIR/post-installation/resources/views/auth/register.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth/register.blade.php && \
+cat $WORKDIR/post-installation/resources/views/auth/login.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth/login.blade.php
 "
 echo "$COMMAND_POST_INSTALLATION"
 

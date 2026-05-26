@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h2>Edit Post</h2>
+<h1>Edit Post</h1>
 
 <form
     action="/posts/{{ $post->id }}"
@@ -31,5 +31,9 @@
     </button>
 
 </form>
+
+<a href="/posts">
+    Back
+</a>
 
 @endsection

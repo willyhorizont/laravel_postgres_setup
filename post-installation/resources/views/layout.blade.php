@@ -4,8 +4,7 @@
     <title>Laravel PostgreSQL CRUD</title>
 </head>
 <body>
-
-    <h1>Laravel PostgreSQL CRUD</h1>
+    @include('navbar')
 
     @yield('content')
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -12,7 +13,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
+        $posts = Post::with('user')->latest()->get();
 
         return view('posts.index', [
             'posts' => $posts,
@@ -24,7 +25,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        if (auth()->check()) {
+            return view('posts.create');
+        }
+        abort(403);
     }
 
     /**
@@ -32,12 +36,16 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        Post::create([
-            'title' => $request->title,
-            'content' => $request->content,
-        ]);
+        if (auth()->check()) {
+            Post::create([
+                'user_id' => Auth::id(),
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+            return;
+        }
 
-        return redirect('/posts');
+        abort(403);
     }
 
     /**
@@ -55,9 +63,12 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit', [
-            'post' => $post,
-        ]);
+        if (auth()->check() && ($post->user_id == auth()->id())) {
+            return view('posts.edit', [
+                'post' => $post,
+            ]);
+        }
+        abort(403);
     }
 
     /**
@@ -65,12 +76,15 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        $post->update([
-            'title' => $request->title,
-            'content' => $request->content,
-        ]);
+        if (auth()->check() && ($post->user_id == auth()->id())) {
+            $post->update([
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+            return;
+        }
 
-        return redirect('/posts');
+        abort(403);
     }
 
     /**
@@ -78,8 +92,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $post->delete();
+        if (auth()->check() && ($post->user_id == auth()->id())) {
+            $post->delete();
+            return;
+        }
 
-        return redirect('/posts');
+        abort(403);
     }
 }
