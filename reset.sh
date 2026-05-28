@@ -54,10 +54,10 @@ docker container ls -a
 
 sudo rm -rf laravel-postgres-projects/$APP_NAME
 
-docker stop $POSTGRES_CONTAINER_ID || true
-docker rm $POSTGRES_CONTAINER_ID || true
-docker stop $APP_CONTAINER_ID || true
-docker rm $APP_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker stop $POSTGRES_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker rm $POSTGRES_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker stop $APP_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker rm $APP_CONTAINER_ID || true
 
 docker rmi -f $APP_IMAGE_NAME || true
 docker rmi -f $POSTGRES_IMAGE_NAME || true

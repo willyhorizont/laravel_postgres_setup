@@ -18,21 +18,6 @@ APP_IMAGE_NAME="laravelpostgresdockerized:configured"
 
 bash ./print-specification.sh
 
-echo "docker compose up -d --build"
-docker compose up -d --build
-
-until docker compose exec -T app php -r "
-try {
-    new PDO('pgsql:host=postgres;port=5432;dbname=laravel', 'postgres', 'secret');
-    echo 'OK';
-} catch (Exception \$e) {
-    exit(1);
-}
-" >/dev/null 2>&1; do
-    echo "Waiting for PostgreSQL..."
-    sleep 1
-done
-
 POSTGRES_CONTAINER_ID=$(docker ps -a --filter ancestor=$POSTGRES_IMAGE_NAME --format \"{{.ID}}\")
 APP_CONTAINER_ID=$(docker ps -a --filter ancestor=$APP_IMAGE_NAME --format \"{{.ID}}\")
 
@@ -53,10 +38,10 @@ export IMAGE_NAME_SUFFIX=\"$APP_NAME\"
 docker images
 docker container ls -a
 sudo rm -rf laravel-postgres-projects/$APP_NAME
-docker stop $POSTGRES_CONTAINER_ID || true
-docker rm $POSTGRES_CONTAINER_ID || true
-docker stop $APP_CONTAINER_ID || true
-docker rm $APP_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker stop $POSTGRES_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker rm $POSTGRES_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker stop $APP_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker rm $APP_CONTAINER_ID || true
 docker rmi $APP_IMAGE_NAME || true
 docker rmi $POSTGRES_IMAGE_NAME || true
 or just: ./reset.sh $APP_NAME

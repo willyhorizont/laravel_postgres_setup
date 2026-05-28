@@ -120,6 +120,50 @@ echo "laravel_postgres_setup [3/3] Post installation..."
 
 # cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
 
+# COMMAND_POST_INSTALLATION="
+# cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
+# php artisan make:model Post -mcr && \
+# cat $WORKDIR/post-installation/database/migrations/create_posts_table.php > \"\$(find $WORKDIR/laravel-postgres-projects/$APP_NAME/database/migrations -name \"*create_posts_table.php\" | head -n 1)\" && \
+
+# sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env && \
+# sed -i 's/^DB_HOST=.*/DB_HOST=postgres/' .env && \
+# sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env && \
+# sed -i 's/^DB_DATABASE=.*/DB_DATABASE=laravel/' .env && \
+# sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env && \
+# sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=secret/' .env && \
+
+# rm -f bootstrap/cache/config.php && \
+# php artisan key:generate && \
+# php artisan config:clear && \
+# php artisan cache:clear && \
+
+# php artisan migrate && \
+
+# php artisan tinker --execute=\"dump(DB::connection()->getDriverName())\" && \
+# php artisan migrate:status && \
+
+# cat $WORKDIR/post-installation/app/Models/Post.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/Post.php && \
+# cat $WORKDIR/post-installation/app/Models/User.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Models/User.php && \
+
+# cat $WORKDIR/post-installation/app/Http/Controllers/PostController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/PostController.php && \
+# cat $WORKDIR/post-installation/app/Http/Controllers/AuthController.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/app/Http/Controllers/AuthController.php && \
+# cat $WORKDIR/post-installation/routes/web.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/routes/web.php && \
+
+# cat $WORKDIR/post-installation/resources/views/layout.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/layout.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/index.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/navbar.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/navbar.blade.php && \
+
+# mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts && \
+# cat $WORKDIR/post-installation/resources/views/posts/index.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/index.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/posts/create.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/create.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/posts/edit.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/edit.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/posts/show.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/posts/show.blade.php && \
+
+# mkdir -p $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth && \
+# cat $WORKDIR/post-installation/resources/views/auth/register.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth/register.blade.php && \
+# cat $WORKDIR/post-installation/resources/views/auth/login.blade.php > $WORKDIR/laravel-postgres-projects/$APP_NAME/resources/views/auth/login.blade.php
+# "
+
 COMMAND_POST_INSTALLATION="
 cd $WORKDIR/laravel-postgres-projects/$APP_NAME && \
 php artisan make:model Post -mcr && \
@@ -171,10 +215,10 @@ export IMAGE_NAME_SUFFIX=\"$APP_NAME\"
 docker images
 docker container ls -a
 sudo rm -rf laravel-postgres-projects/$APP_NAME
-docker stop $POSTGRES_CONTAINER_ID || true
-docker rm $POSTGRES_CONTAINER_ID || true
-docker stop $APP_CONTAINER_ID || true
-docker rm $APP_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker stop $POSTGRES_CONTAINER_ID || true
+[ -n "$POSTGRES_CONTAINER_ID" ] && docker rm $POSTGRES_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker stop $APP_CONTAINER_ID || true
+[ -n "$APP_CONTAINER_ID" ] && docker rm $APP_CONTAINER_ID || true
 docker rmi $APP_IMAGE_NAME || true
 docker rmi $POSTGRES_IMAGE_NAME || true
 or just: ./reset.sh $APP_NAME
